@@ -1,9 +1,8 @@
-import React, { DOMElement, useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core';
 import * as THREE from 'three';
 import {DragControls} from 'three/examples/jsm/controls/DragControls';
-import Typography from '@material-ui/core/Typography';
 import { LayoutContext } from '../context/Layout';
 import ObjectsModal from './ObjectsModal';
 import { ThreeContext } from '../context/Three';
@@ -78,7 +77,7 @@ export default function Main() {
       animate();
 
       if(threeObjects.length > 0){
-        const controls = new DragControls(threeObjects, camera, renderer.domElement);
+        new DragControls(threeObjects, camera, renderer.domElement);
       }
 
       
