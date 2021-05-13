@@ -6,6 +6,7 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import AddIcon from '@material-ui/icons/Add';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -41,11 +42,15 @@ export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
 //   const [open, setOpen] = React.useState(true);
-  const { leftDrawerOpen, setLeftDrawerOpen } = useContext(LayoutContext);
+  const { leftDrawerOpen, setLeftDrawerOpen, setModalOpen } = useContext(LayoutContext);
 
   const handleDrawerClose = () => {
     setLeftDrawerOpen(false);
   };
+
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  }
 
   return (
     <Drawer
@@ -73,12 +78,10 @@ export default function PersistentDrawerLeft() {
         </List>
         <Divider />
         <List>
-          {['All mail'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem button onClick={handleModalOpen} >
+            <ListItemIcon> <AddIcon /> </ListItemIcon>
+            <ListItemText primary="Add" />
+          </ListItem>
         </List>
       </Drawer>
   );

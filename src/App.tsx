@@ -19,9 +19,9 @@ function App() {
 
   const { leftDrawerOpen } = useContext(LayoutContext)
 
-  useEffect(() => {
-    console.log(leftDrawerOpen);
-  })
+  // useEffect(() => {
+  //   console.log(leftDrawerOpen);
+  // })
 
   return (
     <LayoutProvider>

@@ -1,8 +1,11 @@
-import React, { useContext } from 'react';
+import React, { DOMElement, useContext, useEffect, useRef } from 'react';
 import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core';
+import * as THREE from 'three';
+import {DragControls} from 'three/examples/jsm/controls/DragControls';
 import Typography from '@material-ui/core/Typography';
 import { LayoutContext } from '../context/Layout';
-import { makeStyles } from '@material-ui/core';
+import ObjectsModal from './ObjectsModal';
 
 
 const drawerWidth = 240;
@@ -37,9 +40,40 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 export default function Main() {
     const classes = useStyles();
     const { leftDrawerOpen } = useContext(LayoutContext);
+    const sceneEl = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      var scene = new THREE.Scene();
+      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+      var renderer = new THREE.WebGLRenderer();
+      
+      console.log(scene)
+      renderer.setSize( window.innerWidth - 300 , window.innerHeight - 100 );
+      // document.body.appendChild( renderer.domElement );
+      // use ref as a mount point of the Three.js scene instead of the document.body
+      sceneEl.current && sceneEl.current.appendChild( renderer.domElement );
+      var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+      var cube = new THREE.Mesh( geometry, material );
+      var cube2 = new THREE.Mesh( geometry, material );
+      scene.add( ...[cube, cube2] );
+      camera.position.z = 5;
+      var animate = function () {
+        requestAnimationFrame( animate );
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render( scene, camera );
+      };
+      animate();
+
+      const controls = new DragControls([cube, cube2], camera, renderer.domElement);
+
+      
+    }, [sceneEl])
 
     return (
         
@@ -49,29 +83,8 @@ export default function Main() {
           })}
         >
           <div className={classes.drawerHeader} />
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-            facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-            gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-            donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-            adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-            Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-            imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-            arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-            donec massa sapien faucibus et molestie ac.
-          </Typography>
-          <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-            facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-            tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-            consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
-            vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
-            hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
-            tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
-            nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
-            accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
-          </Typography>
+          <div ref={sceneEl}></div>
+        <ObjectsModal />
         </main>
     )
 }
