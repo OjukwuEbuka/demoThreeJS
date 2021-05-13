@@ -7,6 +7,7 @@ import LeftDrawer from './components/LeftDrawer'
 import { LayoutContext, LayoutProvider } from './context/Layout';
 import AppBarComponent from './components/AppBar';
 import Main from './components/Main';
+import { ThreeProvider } from './context/Three';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,12 +26,14 @@ function App() {
 
   return (
     <LayoutProvider>
+      <ThreeProvider>
       <div className={classes.root}>
         <CssBaseline />
         <AppBarComponent />      
         <LeftDrawer />
         <Main />
       </div>
+      </ThreeProvider>
     </LayoutProvider>
   );
 }

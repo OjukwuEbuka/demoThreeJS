@@ -6,6 +6,7 @@ import {DragControls} from 'three/examples/jsm/controls/DragControls';
 import Typography from '@material-ui/core/Typography';
 import { LayoutContext } from '../context/Layout';
 import ObjectsModal from './ObjectsModal';
+import { ThreeContext } from '../context/Three';
 
 
 const drawerWidth = 240;
@@ -45,35 +46,43 @@ export default function Main() {
     const classes = useStyles();
     const { leftDrawerOpen } = useContext(LayoutContext);
     const sceneEl = useRef<HTMLDivElement>(null);
+    const { threeObjects } = useContext(ThreeContext);
 
     useEffect(() => {
-      var scene = new THREE.Scene();
-      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
-      var renderer = new THREE.WebGLRenderer();
+      let scene = new THREE.Scene();
+      let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+      let renderer = new THREE.WebGLRenderer();
       
-      console.log(scene)
+      // console.log(scene)
       renderer.setSize( window.innerWidth - 300 , window.innerHeight - 100 );
       // document.body.appendChild( renderer.domElement );
       // use ref as a mount point of the Three.js scene instead of the document.body
-      sceneEl.current && sceneEl.current.appendChild( renderer.domElement );
-      var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-      var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-      var cube = new THREE.Mesh( geometry, material );
-      var cube2 = new THREE.Mesh( geometry, material );
-      scene.add( ...[cube, cube2] );
+      if(sceneEl.current) {
+        if(sceneEl.current.childNodes.length > 0){
+          sceneEl.current.childNodes.forEach((nod) => {
+            sceneEl.current && sceneEl.current.removeChild(nod)
+          })
+        }
+        sceneEl.current.appendChild(renderer.domElement);
+      }
+      
+      // scene.add( ...[cube, cube2] );
+      threeObjects.length > 0 && scene.add( ...threeObjects );
       camera.position.z = 5;
-      var animate = function () {
+      let animate = function () {
         requestAnimationFrame( animate );
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        // cube.rotation.x += 0.01;
+        // cube.rotation.y += 0.01;
         renderer.render( scene, camera );
       };
       animate();
 
-      const controls = new DragControls([cube, cube2], camera, renderer.domElement);
+      if(threeObjects.length > 0){
+        const controls = new DragControls(threeObjects, camera, renderer.domElement);
+      }
 
       
-    }, [sceneEl])
+    }, [ threeObjects])
 
     return (
         

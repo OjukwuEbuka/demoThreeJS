@@ -66,7 +66,7 @@ export default function AppBarComponent() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Persistent drawer
+            Three JS Editor Demo
           </Typography>
         </Toolbar>
       </AppBar>
