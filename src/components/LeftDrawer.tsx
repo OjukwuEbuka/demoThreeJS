@@ -4,6 +4,7 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import AddIcon from '@material-ui/icons/Add';
@@ -90,6 +91,7 @@ export default function PersistentDrawerLeft() {
               if(obj.geometry.type === 'SphereGeometry'){num = ++sphereCount}
               return (
               <ListItem button key={obj.uuid} id={obj.uuid} onClick={handleEditModalOpen} >
+                <ListItemIcon> <EditIcon /> </ListItemIcon>
                 <ListItemText primary={obj.geometry.type+' '+num} />
               </ListItem>
             )})
