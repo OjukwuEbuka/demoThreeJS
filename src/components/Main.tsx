@@ -56,6 +56,14 @@ export default function Main() {
     const { threeObjects } = useContext(ThreeContext);
 
     useEffect(() => {
+      if(!leftDrawerOpen){
+        sizes.width = window.innerWidth
+      } else {
+        sizes.width = window.innerWidth - 300
+      }
+    }, [leftDrawerOpen])
+
+    useEffect(() => {
       let scene = new THREE.Scene();
       let camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
       let renderer = new THREE.WebGLRenderer();
