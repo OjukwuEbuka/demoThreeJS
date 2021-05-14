@@ -11,6 +11,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { LayoutContext } from '../context/Layout'
+import { ThreeContext } from '../context/Three';
 
 const drawerWidth = 240;
 
@@ -39,13 +40,22 @@ export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
 //   const [open, setOpen] = React.useState(true);
-  const { leftDrawerOpen, setLeftDrawerOpen, setModalOpen } = useContext(LayoutContext);
+  const { leftDrawerOpen, setLeftDrawerOpen, setEditModalOpen, setModalOpen } = useContext(LayoutContext);
+  const { threeObjects, setEditObject } = useContext(ThreeContext);
+  let boxCount = 0;
+  let sphereCount = 0;
 
   const handleDrawerClose = () => {
     setLeftDrawerOpen(false);
   };
 
-  const handleModalOpen = () => {
+  const handleEditModalOpen = (e: any) => {
+    e.target && setEditObject(e.target.parentElement.parentElement.id)
+    // console.log(e.target.parentElement.parentElement.id)
+    setEditModalOpen(true);
+  }
+  
+  const handleModalOpen = (e: any) => {
     setModalOpen(true);
   }
 
@@ -68,8 +78,22 @@ export default function PersistentDrawerLeft() {
         <List>
           <ListItem button onClick={handleModalOpen} >
             <ListItemIcon> <AddIcon /> </ListItemIcon>
-            <ListItemText primary="Add" />
+            <ListItemText primary="Add Object" />
           </ListItem>
+        </List>
+        <Divider />
+        <List>
+          {
+            threeObjects.length > 0 && threeObjects.map((obj) => {
+              let num;
+              if(obj.geometry.type === 'BoxGeometry'){num = ++boxCount}
+              if(obj.geometry.type === 'SphereGeometry'){num = ++sphereCount}
+              return (
+              <ListItem button key={obj.uuid} id={obj.uuid} onClick={handleEditModalOpen} >
+                <ListItemText primary={obj.geometry.type+' '+num} />
+              </ListItem>
+            )})
+          }
         </List>
       </Drawer>
   );

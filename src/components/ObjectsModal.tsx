@@ -34,7 +34,7 @@ export default function SimpleModal() {
       let geometry = new BoxGeometry( 1, 1, 1 );
       let material = new MeshBasicMaterial( { color: 0x00ff00 } );
       let cube = new Mesh( geometry, material );
-
+      // console.log(cube)
       setThreeObjects([...threeObjects, cube]);
       setModalOpen(false);
   }
@@ -43,7 +43,6 @@ export default function SimpleModal() {
     let geometry = new SphereBufferGeometry( .5, 64, 64);
     let material = new MeshBasicMaterial( { color: 0x00ff00 } );
     let sphere = new Mesh(geometry, material);
-
 
     setThreeObjects([...threeObjects, sphere]);
     setModalOpen(false);    
@@ -56,7 +55,7 @@ export default function SimpleModal() {
 
   const body = (
     <div className={classes.paper}>
-      <h2 id="simple-modal-title">Text in a modal</h2>
+      <h2 id="simple-modal-title">Add Object to Scene</h2>
       <Divider />
         <List>
           {objectsArr.map((obj, i) => (
