@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import { Divider, Input, InputLabel, Button } from '@material-ui/core';
+import { Divider, Box, InputLabel, Button } from '@material-ui/core';
+import ColorPicker from 'material-ui-color-picker'
 
 
 import { LayoutContext } from '../context/Layout';
@@ -20,13 +21,12 @@ const useStyles = makeStyles((theme) => ({
   button: {
       backgroundColor: "#76e276",
       marginTop: '5px',
-      marginRight: "auto"
   }
 }));
 
 export default function SimpleModal() {
   const classes = useStyles();
-  const [color, setColor] = useState('')
+  const [color, setColor] = useState("#000");
   const { editModalOpen, setEditModalOpen } = useContext(LayoutContext);
   const { editObject, threeObjects } = useContext(ThreeContext);
 
@@ -34,28 +34,33 @@ export default function SimpleModal() {
     setEditModalOpen(false);
   };
 
-  const handleChangeColor = (e: any) => {
-    setColor(e.target.value)
+  const handleChangeColor = (newColor: any) => {
+    setColor(newColor)
+    console.log(color)
   }
 
   const handleSubmitColor = (e:any) => {
-      e.preventDefault();
-    threeObjects.find((ob) => ob.uuid === editObject).material.color.set(color)
+    e.preventDefault();
+    threeObjects.find((ob) => ob.uuid === editObject)?.material.color.set(color)
     setEditModalOpen(false);
-    setColor('')
   }
 
   const body = (
     <div className={classes.paper}>
       <h2 id="editModalTitle">Edit an Object</h2>
       <Divider />
-      <form onSubmit={handleSubmitColor}>
         <div>
-            <InputLabel>Enter Color</InputLabel>
-            <Input autoFocus type="text" onChange={handleChangeColor} value={color} name="color" />
+          <InputLabel>Click to select color</InputLabel>
+            {/* <Input autoFocus type="text" onChange={handleChangeColor} value={color} name="color" /> */}
+          <ColorPicker
+            defaultValue="#000"
+            value={color}
+            onChange={handleChangeColor}
+          />
         </div>
-        <Button className={classes.button} type='submit'>Change</Button>
-        </form>
+        <Box display="flex" justifyContent="flex-end">
+          <Button className={classes.button}  onClick={handleSubmitColor}>Change</Button>
+        </Box>
     </div>
   );
 

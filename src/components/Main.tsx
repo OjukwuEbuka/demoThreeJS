@@ -44,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
 // const coords = new THREE.Vector2();
 // let canvasBounds: any;
 
+const sizes = {
+  width: window.innerWidth - 300,
+  height: window.innerHeight - 100
+}
+
 export default function Main() {
     const classes = useStyles();
     const { leftDrawerOpen } = useContext(LayoutContext);
@@ -52,7 +57,7 @@ export default function Main() {
 
     useEffect(() => {
       let scene = new THREE.Scene();
-      let camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+      let camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
       let renderer = new THREE.WebGLRenderer();
       scene.background = new THREE.Color( 0xf0f0f0 );
       // const raycaster = new THREE.Raycaster();
@@ -60,7 +65,10 @@ export default function Main() {
       // let INTERSECTED: any;
 
       // console.log(scene)
-      renderer.setSize( window.innerWidth - 300 , window.innerHeight - 100 );
+      // renderer.setSize( window.innerWidth - 300 , window.innerHeight - 100 );
+      renderer.setSize(sizes.width, sizes.height)
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
       // document.body.appendChild( renderer.domElement );
       // use ref as a mount point of the Three.js scene instead of the document.body
       if(sceneEl.current) {
@@ -80,6 +88,22 @@ export default function Main() {
       if(threeObjects.length > 0){
         new DragControls(threeObjects, camera, renderer.domElement);
       }
+
+      
+      window.addEventListener('resize', () =>
+      {
+          // Update sizes
+          sizes.width = window.innerWidth - 300
+          sizes.height = window.innerHeight - 100
+      
+          // Update camera
+          camera.aspect = sizes.width / sizes.height
+          camera.updateProjectionMatrix()
+      
+          // Update renderer
+          renderer.setSize(sizes.width, sizes.height)
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      })
 
       // function render() {
 
