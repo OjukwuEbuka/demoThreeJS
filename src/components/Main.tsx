@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core';
 import * as THREE from 'three';
-import {DragControls} from 'three/examples/jsm/controls/DragControls';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {TransformControls} from 'three/examples/jsm/controls/TransformControls';
 import { LayoutContext } from '../context/Layout';
 import ObjectsModal from './ObjectsModal';
 import EditModal from './EditModal';
@@ -55,7 +55,7 @@ export default function Main() {
     const classes = useStyles();
     const { leftDrawerOpen } = useContext(LayoutContext);
     const sceneEl = useRef<HTMLDivElement>(null);
-    const { threeObjects } = useContext(ThreeContext);
+    const { threeObjects, editObject } = useContext(ThreeContext);
 
     useEffect(() => {
       if(!leftDrawerOpen){
@@ -71,6 +71,7 @@ export default function Main() {
       let renderer = new THREE.WebGLRenderer();
       scene.background = new THREE.Color( 0xf0f0f0 );
       let orbitControls = new OrbitControls(camera, renderer.domElement)
+      let transformControls = new TransformControls(camera, renderer.domElement)
 
       // const raycaster = new THREE.Raycaster();
       // canvasBounds = renderer.domElement.getBoundingClientRect();
@@ -101,16 +102,23 @@ export default function Main() {
       let grid2 = new THREE.GridHelper( 30, 6, 0x222222, 0x222222 );
       grid.add( grid2 );
       scene.add(grid)
+      scene.add(transformControls)
       // scene.add( ...[cube, cube2] );
       threeObjects.length > 0 && scene.add( ...threeObjects );
       // camera.position.z = 5;
       camera.position.set(0, 1, 5).setLength(20)
       orbitControls.update()
+      orbitControls.addEventListener('change', render)
+      transformControls.addEventListener('change', render)
 
       if(threeObjects.length > 0){
-        new DragControls(threeObjects, camera, renderer.domElement);
+        let currentObj = threeObjects.find((obj) => obj.uuid === editObject);
+        transformControls.attach(currentObj)
+        // new DragControls(threeObjects, camera, renderer.domElement);
       }
-
+      transformControls.addEventListener('dragging-changed', (e) =>{
+        orbitControls.enabled = !e.value;
+      })
       
       window.addEventListener('resize', () =>
       {
@@ -121,7 +129,7 @@ export default function Main() {
           // Update camera
           camera.aspect = sizes.width / sizes.height
           camera.updateProjectionMatrix()
-          orbitControls.update()
+          // orbitControls.update()
       
           // Update renderer
           renderer.setSize(sizes.width, sizes.height)
@@ -166,12 +174,14 @@ export default function Main() {
         requestAnimationFrame( animate );
         // cube.rotation.x += 0.01;
         // cube.rotation.y += 0.01;
-        renderer.render( scene, camera );
+        render()
         // render()
       };
       animate();
       // window.requestAnimationFrame(render);
-
+      function render () {
+        renderer.render( scene, camera );
+      }
       
     })
 

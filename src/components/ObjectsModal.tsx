@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SimpleModal() {
   const classes = useStyles();
   const { modalOpen, setModalOpen } = useContext(LayoutContext);
-  const { threeObjects, setThreeObjects } = useContext(ThreeContext);
+  const { threeObjects, setThreeObjects, setEditObject } = useContext(ThreeContext);
 
   const handleClose = () => {
     setModalOpen(false);
@@ -36,6 +36,7 @@ export default function SimpleModal() {
       let cube = new Mesh( geometry, material );
       // console.log(cube)
       setThreeObjects([...threeObjects, cube]);
+      setEditObject(cube.uuid);
       setModalOpen(false);
   }
 
@@ -45,6 +46,7 @@ export default function SimpleModal() {
     let sphere = new Mesh(geometry, material);
 
     setThreeObjects([...threeObjects, sphere]);
+    setEditObject(sphere.uuid);
     setModalOpen(false);    
   }
 
