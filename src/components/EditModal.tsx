@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SimpleModal() {
   const classes = useStyles();
-  const [color, setColor] = useState("#000");
+  // const [color, setColor] = useState("#000");
   const { editModalOpen, setEditModalOpen } = useContext(LayoutContext);
   const { editObject, threeObjects } = useContext(ThreeContext);
 
@@ -34,15 +34,14 @@ export default function SimpleModal() {
     setEditModalOpen(false);
   };
 
-  const handleChangeColor = (newColor: any) => {
-    setColor(newColor)
-    console.log(color)
-  }
+  // const handleChangeColor = (newColor: any) => {
+  //   setColor(newColor)
+  //   console.log(color)
+  // }
 
-  const handleSubmitColor = (e:any) => {
-    e.preventDefault();
+  const handleSubmitColor = (color:any) => {
     threeObjects.find((ob) => ob.uuid === editObject)?.material.color.set(color)
-    setEditModalOpen(false);
+    // setEditModalOpen(false);
   }
 
   const body = (
@@ -54,8 +53,7 @@ export default function SimpleModal() {
             {/* <Input autoFocus type="text" onChange={handleChangeColor} value={color} name="color" /> */}
           <ColorPicker
             defaultValue="#000"
-            value={color}
-            onChange={handleChangeColor}
+            onChange={handleSubmitColor}
           />
         </div>
         <Box display="flex" justifyContent="flex-end">

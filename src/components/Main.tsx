@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core';
 import * as THREE from 'three';
 import {DragControls} from 'three/examples/jsm/controls/DragControls';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
 import { LayoutContext } from '../context/Layout';
 import ObjectsModal from './ObjectsModal';
 import EditModal from './EditModal';
@@ -17,12 +18,13 @@ const useStyles = makeStyles((theme) => ({
   },  
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    // padding: theme.spacing(3),
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: -drawerWidth,
+    marginRight: -drawerWidth,
   },
   contentShift: {
     transition: theme.transitions.create('margin', {
@@ -31,22 +33,22 @@ const useStyles = makeStyles((theme) => ({
     }),
     marginLeft: 0,
   },  
-  drawerHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-  },
+  // drawerHeader: {
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   padding: theme.spacing(0, 1),
+  //   // necessary for content to be below app bar
+  //   ...theme.mixins.toolbar,
+  //   justifyContent: 'flex-end',
+  // },
 }));
 
 // const coords = new THREE.Vector2();
 // let canvasBounds: any;
 
 const sizes = {
-  width: window.innerWidth - 300,
-  height: window.innerHeight - 100
+  width: window.innerWidth - 480,
+  height: window.innerHeight
 }
 
 export default function Main() {
@@ -59,7 +61,7 @@ export default function Main() {
       if(!leftDrawerOpen){
         sizes.width = window.innerWidth
       } else {
-        sizes.width = window.innerWidth - 300
+        sizes.width = window.innerWidth - 480
       }
     }, [leftDrawerOpen])
 
@@ -68,6 +70,8 @@ export default function Main() {
       let camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
       let renderer = new THREE.WebGLRenderer();
       scene.background = new THREE.Color( 0xf0f0f0 );
+      let orbitControls = new OrbitControls(camera, renderer.domElement)
+
       // const raycaster = new THREE.Raycaster();
       // canvasBounds = renderer.domElement.getBoundingClientRect();
       // let INTERSECTED: any;
@@ -87,11 +91,21 @@ export default function Main() {
         }
         sceneEl.current.appendChild(renderer.domElement);
       }
-      
+
+      // let plane = new THREE.GridHelper(50, 30);
+      let grid = new THREE.Group();
+
+      let grid1 = new THREE.GridHelper( 30, 30, 0x888888, 0x888888 );
+      grid.add( grid1 );
+
+      let grid2 = new THREE.GridHelper( 30, 6, 0x222222, 0x222222 );
+      grid.add( grid2 );
+      scene.add(grid)
       // scene.add( ...[cube, cube2] );
       threeObjects.length > 0 && scene.add( ...threeObjects );
-      camera.position.z = 5;
-      
+      // camera.position.z = 5;
+      camera.position.set(0, 1, 5).setLength(20)
+      orbitControls.update()
 
       if(threeObjects.length > 0){
         new DragControls(threeObjects, camera, renderer.domElement);
@@ -101,12 +115,13 @@ export default function Main() {
       window.addEventListener('resize', () =>
       {
           // Update sizes
-          sizes.width = window.innerWidth - 300
-          sizes.height = window.innerHeight - 100
+          sizes.width = window.innerWidth - 480
+          sizes.height = window.innerHeight
       
           // Update camera
           camera.aspect = sizes.width / sizes.height
           camera.updateProjectionMatrix()
+          orbitControls.update()
       
           // Update renderer
           renderer.setSize(sizes.width, sizes.height)
@@ -180,7 +195,7 @@ export default function Main() {
             [classes.contentShift]: leftDrawerOpen,
           })}
         >
-          <div className={classes.drawerHeader} />
+          {/* <div className={classes.drawerHeader} /> */}
           <div ref={sceneEl}></div>
         <ObjectsModal />
         <EditModal />

@@ -41,7 +41,7 @@ export default function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
 //   const [open, setOpen] = React.useState(true);
-  const { leftDrawerOpen, setLeftDrawerOpen, setEditModalOpen, setModalOpen } = useContext(LayoutContext);
+  const { leftDrawerOpen, setLeftDrawerOpen, setModalOpen } = useContext(LayoutContext);
   const { threeObjects, setEditObject } = useContext(ThreeContext);
   let boxCount = 0;
   let sphereCount = 0;
@@ -53,7 +53,7 @@ export default function PersistentDrawerLeft() {
   const handleEditModalOpen = (e: any) => {
     e.target && setEditObject(e.target.parentElement.parentElement.id)
     // console.log(e.target.parentElement.parentElement.id)
-    setEditModalOpen(true);
+    // setEditModalOpen(true);
   }
   
   const handleModalOpen = (e: any) => {
