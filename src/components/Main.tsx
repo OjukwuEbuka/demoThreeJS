@@ -32,19 +32,11 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
-  },  
-  // drawerHeader: {
-  //   display: 'flex',
-  //   alignItems: 'center',
-  //   padding: theme.spacing(0, 1),
-  //   // necessary for content to be below app bar
-  //   ...theme.mixins.toolbar,
-  //   justifyContent: 'flex-end',
-  // },
+  }
 }));
 
-// const coords = new THREE.Vector2();
-// let canvasBounds: any;
+const coords = new THREE.Vector2();
+let raycaster:any, camera:any, scene:any, transformControls:any;
 
 const sizes = {
   width: window.innerWidth - 480,
@@ -55,29 +47,27 @@ export default function Main() {
     const classes = useStyles();
     const { leftDrawerOpen } = useContext(LayoutContext);
     const sceneEl = useRef<HTMLDivElement>(null);
-    const { threeObjects, editObject } = useContext(ThreeContext);
+    const { threeObjects, editObject, setEditObject } = useContext(ThreeContext);
+
+    // useEffect(() => {
+    //   if(!leftDrawerOpen){
+    //     sizes.width = window.innerWidth
+    //   } else {
+    //     sizes.width = window.innerWidth - 480
+    //   }
+    // }, [leftDrawerOpen])
 
     useEffect(() => {
-      if(!leftDrawerOpen){
-        sizes.width = window.innerWidth
-      } else {
-        sizes.width = window.innerWidth - 480
-      }
-    }, [leftDrawerOpen])
-
-    useEffect(() => {
-      let scene = new THREE.Scene();
-      let camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera( 75, sizes.width / sizes.height, 0.1, 1000 );
       let renderer = new THREE.WebGLRenderer();
       scene.background = new THREE.Color( 0xf0f0f0 );
       let orbitControls = new OrbitControls(camera, renderer.domElement)
-      let transformControls = new TransformControls(camera, renderer.domElement)
+      transformControls = new TransformControls(camera, renderer.domElement)
 
-      // const raycaster = new THREE.Raycaster();
-      // canvasBounds = renderer.domElement.getBoundingClientRect();
-      // let INTERSECTED: any;
+      raycaster = new THREE.Raycaster();
 
-      // console.log(scene)
+      // console.log(canvasBounds)
       // renderer.setSize( window.innerWidth - 300 , window.innerHeight - 100 );
       renderer.setSize(sizes.width, sizes.height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -116,7 +106,7 @@ export default function Main() {
         transformControls.attach(currentObj)
         // new DragControls(threeObjects, camera, renderer.domElement);
       }
-      transformControls.addEventListener('dragging-changed', (e) =>{
+      transformControls.addEventListener('dragging-changed', (e: any) =>{
         orbitControls.enabled = !e.value;
       })
       
@@ -134,40 +124,7 @@ export default function Main() {
           // Update renderer
           renderer.setSize(sizes.width, sizes.height)
           renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      })
-
-      // function render() {
-
-      //   // update the picking ray with the camera and mouse position
-      //   raycaster.setFromCamera( coords, camera );
-
-      //   // calculate objects intersecting the picking ray
-      //   const intersects: any = raycaster.intersectObjects( scene.children );
-
-      //   if ( intersects.length > 0 ) {
-
-			// 		if ( INTERSECTED !== intersects[ 0 ].object ) {
-
-			// 			// if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-			// 			INTERSECTED = intersects[ 0 ].object;
-      //       console.log(INTERSECTED.uuid)
-			// 			// INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-			// 			// INTERSECTED.material.emissive.setHex( 0xff0000 );
-
-			// 		}
-
-			// 	} else {
-
-			// 		// if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-			// 		INTERSECTED = null;
-
-			// 	}
-
-      //   renderer.render( scene, camera );
-
-      // }
+      })      
 
       // window.addEventListener( 'mousemove', onMouseMove, false );
       let animate = function () {
@@ -187,16 +144,33 @@ export default function Main() {
 
     
 
-    // const handleMouseEvent = ( event: any ) => {
-    //   // calculate mouse position in normalized device coordinates
-    //   // (-1 to +1) for both components
-    //   event.preventDefault();
-    //   coords.x = (( event.target.clientWidth - canvasBounds.left ) / ( canvasBounds.right - canvasBounds.left) ) * 2 - 1;
-    //   coords.y = - (( event.target.clientHeight - canvasBounds.top ) / ( canvasBounds.bottom - canvasBounds.top)) * 2 + 1;
-    //   // coords.x = (event.nativeEvent.offsetX / event.target.clientWidth) * 2 - 1;
-    //   // coords.y = - (event.nativeEvent.offsetY / event.target.clientHeight) * 2 + 1;
-    //   console.log(event, coords)
-    // }
+    const handleMouseEvent = ( event: any ) => {
+      // calculate mouse position in normalized device coordinates
+      // (-1 to +1) for both components
+      event.preventDefault();
+      let INTERSECTED: any;coords.x = (event.nativeEvent.offsetX / event.target.clientWidth) * 2 - 1;
+      coords.y = - (event.nativeEvent.offsetY / event.target.clientHeight) * 2 + 1;
+      // console.log(event, coords)
+
+      //   // update the picking ray with the camera and mouse position
+      raycaster.setFromCamera( coords, camera );
+
+      //   // calculate objects intersecting the picking ray
+        const intersects: any = raycaster.intersectObjects( scene.children );
+
+        if ( intersects.length > 0 ) {
+					if ( INTERSECTED !== intersects[ 0 ].object ) {
+						INTERSECTED = intersects[ 0 ].object;
+            // console.log(INTERSECTED.uuid)
+            let currentUUID = INTERSECTED.uuid;
+            let currentObj = threeObjects.find((obj) => obj.uuid === INTERSECTED.uuid);
+            transformControls.attach(currentObj)
+            setEditObject(currentUUID)
+					}
+				} else {
+					INTERSECTED = null;
+				}
+    }
 
     return (
         
@@ -206,7 +180,7 @@ export default function Main() {
           })}
         >
           {/* <div className={classes.drawerHeader} /> */}
-          <div ref={sceneEl}></div>
+          <div onClick={handleMouseEvent} ref={sceneEl}></div>
         <ObjectsModal />
         <EditModal />
         </main>
